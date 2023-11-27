@@ -1,0 +1,21 @@
+﻿  CDialogSample.cpp
+  ChildFrm.cpp
+  ClassView.cpp
+  DIP-YS.cpp
+  DIP-YSDoc.cpp
+  DIP-YSView.cpp
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\2.Mosaic\DIP-YSView.cpp(190,24): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\2.Mosaic\DIP-YSView.cpp(189,49): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\2.Mosaic\DIP-YSView.cpp(195,25): warning C4018: “<”: 有符号/无符号不匹配
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\2.Mosaic\DIP-YSView.cpp(198,68): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\2.Mosaic\DIP-YSView.cpp(198,51): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\2.Mosaic\DIP-YSView.cpp(218,29): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\2.Mosaic\DIP-YSView.cpp(219,29): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\2.Mosaic\DIP-YSView.cpp(222,33): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\2.Mosaic\DIP-YSView.cpp(223,34): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+  FileView.cpp
+  MainFrm.cpp
+  OutputWnd.cpp
+  PropertiesWnd.cpp
+  正在生成代码...
+  DIP-YS.vcxproj -> D:\Software\Visual Studio\CodesFile\Digital_Image_Process\2.Mosaic\x64\Debug\DIP-YS.exe
