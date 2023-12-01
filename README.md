@@ -40,6 +40,6 @@ BLCU-Digital Media Technology Department 21sm2YS，Teacher:ZXW
 —— **Change** the include directory and library directory of opencv to your own<br />
 ———————————————————Update log 2023.12.01—————————————————————<br />
 I have rebuilt this repository and now all X64 and .vs directories have been deleted. All you need to do is rebuild<br />
-the solution and change the containing and library directories to your own opencv.                                 <br />
+the solution and change the include directory and library directory of opencv to your own.                                 <br />
 
 ——————————————————————————————————————————————————<br />
