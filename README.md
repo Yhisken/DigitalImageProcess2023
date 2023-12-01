@@ -27,6 +27,7 @@ BLCU-Digital Media Technology Department 21sm2YS，Teacher:ZXW
 **solution :** <https://blog.csdn.net/weixin_38419133/article/details/88597072><br />
 **issue2 :** fatal error LNK1201:写入程序数据库“***.pdb”时出错<br />
 **solution :** **Delete** x64/Debug/"the DIP-YS.pdb" and then rebuild the solution<br />
+**issue3 :** After this project, there may be a problem with all projects. When it comes to entering values in a dialog box, you need to ensure that the size of the image you open is not too large, such as 1920 * 1080. Of course, I don't know the specific legal range, but 1920 * 1080 is absolutely not acceptable.<br />
 **tips :** <br />
 —— **Change** the include directory and library directory of opencv to your own<br />
 ### — 4.Color
