@@ -1,9 +1,4 @@
-﻿  CDialogSample.cpp
-  ChildFrm.cpp
-  ClassView.cpp
-  DIP-YS.cpp
-  DIP-YSDoc.cpp
-  DIP-YSView.cpp
+﻿  DIP-YSView.cpp
 D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp(208,24): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
 D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp(207,49): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
 D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp(213,25): warning C4018: “<”: 有符号/无符号不匹配
@@ -19,12 +14,7 @@ D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp
 D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp(373,29): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
 D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp(376,28): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
 D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp(390,25): warning C4018: “<”: 有符号/无符号不匹配
-D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp(774,29): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
-D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp(777,25): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
-  FileView.cpp
-  MainFrm.cpp
-  OutputWnd.cpp
-  PropertiesWnd.cpp
-  正在生成代码...
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp(768,29): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp(771,25): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
 D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\DIP-YSView.cpp(359): warning C4715: “CDIPYSView::QuantizeRule”: 不是所有的控件路径都返回值
   DIP-YS.vcxproj -> D:\Software\Visual Studio\CodesFile\Digital_Image_Process\4.Color\x64\Debug\DIP-YS.exe
