@@ -42,4 +42,4 @@ BLCU-Digital Media Technology Department 21sm2YS，Teacher:ZXW
 I have rebuilt this repository and now all X64 and .vs directories have been deleted. All you need to do is rebuild <br />
 the solution and change the containing and library directories to your own opencv.<br />
 
-—————————————————————————————————————————————————————————————<br />
+——————————————————————————————————————————————————<br />
