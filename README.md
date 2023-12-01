@@ -38,8 +38,8 @@ BLCU-Digital Media Technology Department 21sm2YS，Teacher:ZXW
 **solution :** **Delete** x64/Debug/"the DIP-YS.pdb" and then rebuild the solution<br />
 **tips :** <br />
 —— **Change** the include directory and library directory of opencv to your own<br />
-————————————————————————————————————————Update log 2023.12.01————————————————————————————————————————————————————<br />
+———————————————————Update log 2023.12.01—————————————————————<br />
 I have rebuilt this repository and now all X64 and .vs directories have been deleted. All you need to do is rebuild <br />
 the solution and change the containing and library directories to your own opencv.<br />
 
-—————————————————————————————————————————————————————————————————————————————————————————————————————————————————<br />
+—————————————————————————————————————————————————————————————<br />
