@@ -1,0 +1,3 @@
+D:\Software\Visual Studio\CodesFile\DIP-YS\x64\Debug\DIP-YS.exe
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\2.Mosaic\x64\Debug\DIP-YS.exe
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\x64\Debug\DIP-YS.exe

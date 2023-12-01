@@ -1,0 +1,18 @@
+﻿  DIP-YSView.cpp
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(192,24): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(191,49): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(197,25): warning C4018: “<”: 有符号/无符号不匹配
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(200,68): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(200,51): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(220,29): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(221,29): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(224,33): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(225,34): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(270,29): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(273,28): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(289,25): warning C4018: “<”: 有符号/无符号不匹配
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(357,29): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(360,28): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(374,25): warning C4018: “<”: 有符号/无符号不匹配
+D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\DIP-YSView.cpp(343): warning C4715: “CDIPYSView::QuantizeRule”: 不是所有的控件路径都返回值
+  DIP-YS.vcxproj -> D:\Software\Visual Studio\CodesFile\Digital_Image_Process\3.Quantization\x64\Debug\DIP-YS.exe
