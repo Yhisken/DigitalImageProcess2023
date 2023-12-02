@@ -1,4 +1,4 @@
-# 2023 Fall Digital Image Process
+# 2023 Fall Digital Image Processing
 BLCU-Digital Media Technology Department 21sm2YS，Teacher:ZXW
 ## Homework—Experiment（Environment：Opencv4.8.0，VS2022 C++ MFC）
 ## For more information, please refer to branch master
