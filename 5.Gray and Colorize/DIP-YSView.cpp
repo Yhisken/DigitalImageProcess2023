@@ -304,8 +304,8 @@ void CDIPYSView::OnDigitizeQuantizerule()
 	pDocNew->m_MatOpen = pDoc->m_MatOpen;
 
 
-	int width = pDocNew->m_MatOpen.rows;//图片的长度
-	int height = pDocNew->m_MatOpen.cols;//图片的宽度
+	int height = pDocNew->m_MatOpen.rows;//图片的长度
+	int width = pDocNew->m_MatOpen.cols;//图片的宽度
 	int channel = pDocNew->m_MatOpen.channels();
 	for (unsigned y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
