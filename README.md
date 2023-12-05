@@ -44,3 +44,7 @@ I have rebuilt this repository and now all X64 and .vs directories have been del
 the solution and change the include directory and library directory of opencv to your own.                                 <br />
 
 ——————————————————————————————————————————————————<br />
+
+### — 5.Gray and Colorize
+**new function :** The menu has added options for **Gray** and **Colorize**. However, considering the need and complexity, there are two **Gray** operations here: **Max** and **Min**, and **Colorize** only has **JET, HSV, and BONE**. Please add them yourself if needed.
+
