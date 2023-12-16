@@ -46,5 +46,5 @@ the solution and change the include directory and library directory of opencv to
 ——————————————————————————————————————————————————<br />
 
 ### — 5.Gray and Colorize
-**new function :** The menu has added options for **Gray** and **Colorize**. However, considering the need and complexity, there are two **Gray** operations here: **Max**,**Min**,**Middle** for RGB,**weighted mean** for HSV,Only **L** for Lab, and **Colorize** only has **JET, HSV, and BONE**. Please add them yourself if needed.
+**new function :** The menu has added options for **Gray** and **Colorize**. However, considering the need and complexity, there are 5 **Gray** operations here: **Max**,**Min**,**Middle** for RGB,**weighted mean** for HSV,Only **L** for Lab, and **Colorize** only has **JET, HSV, and BONE**. Please add them yourself if needed.
 
