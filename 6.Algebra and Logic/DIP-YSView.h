@@ -84,6 +84,31 @@ public:
 	afx_msg void OnArithmeticNegative();
 	afx_msg void OnArithmeticColordodge();
 	afx_msg void OnArithmeticColorburn();
+	afx_msg void OnGrayMiddle();
+	afx_msg void OnGrayWeightedaveragehsv();
+	afx_msg void OnGrayCompoundforl();
+	afx_msg void OnArithmeticAlpha();
+	afx_msg void OnArithmeticMultiplyalpha();
+	afx_msg void OnArithmeticOverlay();
+	afx_msg void OnArithmeticHardlight();
+	afx_msg void OnArithmeticVividlight();
+	afx_msg void OnArithmeticLinearlight();
+	afx_msg void OnArithmeticHue();
+	afx_msg void OnArithmeticSaturation();
+	afx_msg void OnArithmeticLuminosity();
+	afx_msg void OnArithmeticColor();
+	afx_msg void OnLogicMin();
+	afx_msg void OnLogicMax();
+	afx_msg void OnLogicPinlight();
+	afx_msg void OnLogicAnd();
+	afx_msg void OnLogicOr();
+	afx_msg void OnLogicNot();
+	afx_msg void OnLogicXor();
+	afx_msg void OnLogicNand();
+	afx_msg void OnLogicNor();
+	afx_msg void OnLogicCompareand();
+	afx_msg void OnLogicCompareor();
+	afx_msg void OnLogicComparexor();
 };
 
 #ifndef _DEBUG  // DIP-YSView.cpp 中的调试版本

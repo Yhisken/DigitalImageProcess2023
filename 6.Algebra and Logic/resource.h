@@ -125,13 +125,39 @@
 #define ID_ARITHMETIC_NEGATIVE          32804
 #define ID_ARITHMETIC_COLORDODGE        32805
 #define ID_ARITHMETIC_COLORBURN         32806
+#define ID_GRAY_ONGRAYMIDDLE            32807
+#define ID_GRAY_MIDDLE                  32808
+#define ID_GRAY_WEIGHTEDAVERAGEHSV      32809
+#define ID_GRAY_COMPOUNDFORL            32810
+#define ID_ARITHMETIC_ALPHA             32811
+#define ID_ARITHMETIC_MULTIPLYALPHA     32812
+#define ID_ARITHMETIC_OVERLAY           32813
+#define ID_ARITHMETIC_HARDLIGHT         32814
+#define ID_ARITHMETIC_VIVIDLIGHT        32815
+#define ID_ARITHMETIC_LINEARLIGHT       32816
+#define ID_ARITHMETIC_HUE               32817
+#define ID_ARITHMETIC_SATURATION        32818
+#define ID_ARITHMETIC_LUMINOSITY        32819
+#define ID_ARITHMETIC_COLOR             32820
+#define ID_LOGIC_MIN                    32821
+#define ID_LOGIC_MAX                    32822
+#define ID_LOGIC_PINLIGHT               32823
+#define ID_LOGIC_AND                    32824
+#define ID_LOGIC_OR                     32825
+#define ID_LOGIC_NOT                    32826
+#define ID_LOGIC_XOR                    32827
+#define ID_LOGIC_NAND                   32828
+#define ID_LOGIC_NOR                    32829
+#define ID_LOGIC_COMPAREAND             32830
+#define ID_LOGIC_COMPAREOR              32831
+#define ID_LOGIC_COMPAREXOR             32832
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        312
-#define _APS_NEXT_COMMAND_VALUE         32807
+#define _APS_NEXT_COMMAND_VALUE         32833
 #define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
