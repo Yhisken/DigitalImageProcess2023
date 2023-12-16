@@ -73,9 +73,17 @@ public:
 	afx_msg void OnColorizeBone();
 	afx_msg void OnColorizeHsv();
 	afx_msg void OnGrayMax();
-	afx_msg void OnGrayMiddle();
-	afx_msg void OnGrayWeightedaveragehsv();
-	afx_msg void OnGrayCompoundlab();
+	afx_msg void OnArithmeticAdd();
+	afx_msg void OnArithmeticSubtract();
+	afx_msg void OnArithmeticMultiply();
+	afx_msg void OnArithmeticDivide();
+	afx_msg void OnArithmeticLinearburn();
+	afx_msg void OnArithmeticScreen();
+	afx_msg void OnArithmeticExclusion();
+	afx_msg void OnArithmeticDifference();
+	afx_msg void OnArithmeticNegative();
+	afx_msg void OnArithmeticColordodge();
+	afx_msg void OnArithmeticColorburn();
 };
 
 #ifndef _DEBUG  // DIP-YSView.cpp 中的调试版本

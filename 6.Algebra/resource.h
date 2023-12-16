@@ -114,16 +114,24 @@
 #define ID_COLORIZE_BONE                32793
 #define ID_COLORIZE_HSV                 32794
 #define ID_GRAY_MAX                     32795
-#define ID_GRAY_MIDDLE                  32796
-#define ID_GRAY_WEIGHTEDAVERAGEHSV      32797
-#define ID_GRAY_COMPOUNDLAB             32798
+#define ID_ARITHMETIC_ADD               32796
+#define ID_ARITHMETIC_SUBTRACT          32797
+#define ID_ARITHMETIC_MULTIPLY          32798
+#define ID_ARITHMETIC_DIVIDE            32799
+#define ID_ARITHMETIC_LINEARBURN        32800
+#define ID_ARITHMETIC_SCREEN            32801
+#define ID_ARITHMETIC_EXCLUSION         32802
+#define ID_ARITHMETIC_DIFFERENCE        32803
+#define ID_ARITHMETIC_NEGATIVE          32804
+#define ID_ARITHMETIC_COLORDODGE        32805
+#define ID_ARITHMETIC_COLORBURN         32806
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        312
-#define _APS_NEXT_COMMAND_VALUE         32799
+#define _APS_NEXT_COMMAND_VALUE         32807
 #define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

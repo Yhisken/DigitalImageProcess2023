@@ -55,9 +55,17 @@ BEGIN_MESSAGE_MAP(CDIPYSView, CScrollView)
 	ON_COMMAND(ID_COLORIZE_BONE, &CDIPYSView::OnColorizeBone)
 	ON_COMMAND(ID_COLORIZE_HSV, &CDIPYSView::OnColorizeHsv)
 	ON_COMMAND(ID_GRAY_MAX, &CDIPYSView::OnGrayMax)
-	ON_COMMAND(ID_GRAY_MIDDLE, &CDIPYSView::OnGrayMiddle)
-	ON_COMMAND(ID_GRAY_WEIGHTEDAVERAGEHSV, &CDIPYSView::OnGrayWeightedaveragehsv)
-	ON_COMMAND(ID_GRAY_COMPOUNDLAB, &CDIPYSView::OnGrayCompoundlab)
+	ON_COMMAND(ID_ARITHMETIC_ADD, &CDIPYSView::OnArithmeticAdd)
+	ON_COMMAND(ID_ARITHMETIC_SUBTRACT, &CDIPYSView::OnArithmeticSubtract)
+	ON_COMMAND(ID_ARITHMETIC_MULTIPLY, &CDIPYSView::OnArithmeticMultiply)
+	ON_COMMAND(ID_ARITHMETIC_DIVIDE, &CDIPYSView::OnArithmeticDivide)
+	ON_COMMAND(ID_ARITHMETIC_LINEARBURN, &CDIPYSView::OnArithmeticLinearburn)
+	ON_COMMAND(ID_ARITHMETIC_SCREEN, &CDIPYSView::OnArithmeticScreen)
+	ON_COMMAND(ID_ARITHMETIC_EXCLUSION, &CDIPYSView::OnArithmeticExclusion)
+	ON_COMMAND(ID_ARITHMETIC_DIFFERENCE, &CDIPYSView::OnArithmeticDifference)
+	ON_COMMAND(ID_ARITHMETIC_NEGATIVE, &CDIPYSView::OnArithmeticNegative)
+	ON_COMMAND(ID_ARITHMETIC_COLORDODGE, &CDIPYSView::OnArithmeticColordodge)
+	ON_COMMAND(ID_ARITHMETIC_COLORBURN, &CDIPYSView::OnArithmeticColorburn)
 END_MESSAGE_MAP()
 
 // CDIPYSView 构造/析构
@@ -922,113 +930,290 @@ void CDIPYSView::OnGrayMax()
 }
 
 
-void CDIPYSView::OnGrayMiddle()
+void CDIPYSView::OnArithmeticAdd()
 {
 	CDIPYSDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
 
-	CMainFrame* pFrame = (CMainFrame*)AfxGetApp()->m_pMainWnd;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_OPEN);
+	CDIPYSView* pViewAnother = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocAnother = pViewAnother->GetDocument();
+
+
 	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
 	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
 	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
-	pDocNew->m_MatOpen.create(pDoc->m_MatOpen.rows, pDoc->m_MatOpen.cols, CV_8UC1);
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
 
-	int height = pDoc->m_MatOpen.rows;//图片的长度
-	int width = pDoc->m_MatOpen.cols;//图片的宽度
-	int channel = pDoc->m_MatOpen.channels();
+	add(pDoc->m_MatOpen, pDocAnother->m_MatOpen, pDocNew->m_MatOpen);
 
-	for (unsigned y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
-			std::vector<int> values;
-			for (int c = 0; c < channel; c++) {
-				int k = pDoc->m_MatOpen.at<cv::Vec3b>(y, x)[c];
-				values.push_back(k);
-			}
-			std::sort(values.begin(), values.end());
-			int median;
-			if (values.size() % 2 == 0)
-				median = (values[values.size() / 2 - 1] + values[values.size() / 2]) / 2;
-			else
-				median = values[values.size() / 2];
-
-			pDocNew->m_MatOpen.at<uchar>(y, x) = median;
-		}
-	}
 	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
 	pViewNew->OnInitialUpdate();
+
 }
 
 
-void CDIPYSView::OnGrayWeightedaveragehsv()
+void CDIPYSView::OnArithmeticSubtract()
 {
 	CDIPYSDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
 
-	CMainFrame* pFrame = (CMainFrame*)AfxGetApp()->m_pMainWnd;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_OPEN);
+	CDIPYSView* pViewAnother = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocAnother = pViewAnother->GetDocument();
+
 	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
 	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
 	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
-	pDocNew->m_MatOpen.create(pDoc->m_MatOpen.rows, pDoc->m_MatOpen.cols, CV_8UC1);
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
 
-	int height = pDoc->m_MatOpen.rows;//图片的长度
-	int width = pDoc->m_MatOpen.cols;//图片的宽度
+	subtract(pDoc->m_MatOpen, pDocAnother->m_MatOpen, pDocNew->m_MatOpen);
 
-	cv::Mat hsvImage;
-	cv::cvtColor(pDoc->m_MatOpen, hsvImage, cv::COLOR_BGR2HSV);
-
-	float hWeight = 0.3; // 色调的权重
-	float sWeight = 0.3; // 饱和度的权重
-	float vWeight = 0.4; // 值的权重
-
-	for (unsigned y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
-			cv::Vec3b hsvPixel = hsvImage.at<cv::Vec3b>(y, x);
-
-			int h = hsvPixel[0];
-			int s = hsvPixel[1];
-			int v = hsvPixel[2];
-
-			int gray = h * hWeight + s * sWeight + v * vWeight;
-			pDocNew->m_MatOpen.at<uchar>(y, x) = gray;
-		}
-	}
 	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
 	pViewNew->OnInitialUpdate();
+
 }
 
 
-void CDIPYSView::OnGrayCompoundlab()
+void CDIPYSView::OnArithmeticMultiply()
 {
 	CDIPYSDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
 
-	CMainFrame* pFrame = (CMainFrame*)AfxGetApp()->m_pMainWnd;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_OPEN);
+	CDIPYSView* pViewAnother = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocAnother = pViewAnother->GetDocument();
+
 	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
 	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
 	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
-	pDocNew->m_MatOpen.create(pDoc->m_MatOpen.rows, pDoc->m_MatOpen.cols, CV_8UC1);
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
 
-	int height = pDoc->m_MatOpen.rows;//图片的长度
-	int width = pDoc->m_MatOpen.cols;//图片的宽度
+	pDoc->m_MatOpen.convertTo(pDoc->m_MatOpen, CV_32FC3, 1.0 / 255.0);
+	pDocAnother->m_MatOpen.convertTo(pDocAnother->m_MatOpen, CV_32FC3, 1.0 / 255.0);
+	multiply(pDoc->m_MatOpen, pDocAnother->m_MatOpen, pDocNew->m_MatOpen);
+	pDocNew->m_MatOpen.convertTo(pDocNew->m_MatOpen, CV_8UC3, 255);
 
-	cv::Mat labImage;
-	cv::cvtColor(pDoc->m_MatOpen, labImage, cv::COLOR_BGR2Lab);
-
-	for (unsigned y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
-			cv::Vec3b labPixel = labImage.at<cv::Vec3b>(y, x);
-
-			int L = labPixel[0];
-
-			pDocNew->m_MatOpen.at<uchar>(y, x) = L;
-		}
-	}
 	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
 	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnArithmeticDivide()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_OPEN);
+	CDIPYSView* pViewAnother = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocAnother = pViewAnother->GetDocument();
+
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+
+	divide(pDoc->m_MatOpen, pDocAnother->m_MatOpen, pDocNew->m_MatOpen);
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnArithmeticLinearburn()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_OPEN);
+	CDIPYSView* pViewAnother = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocAnother = pViewAnother->GetDocument();
+
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+
+	pDocNew->m_MatOpen = abs(pDoc->m_MatOpen + pDocAnother->m_MatOpen - 255);
+
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+
+}
+
+
+void CDIPYSView::OnArithmeticScreen()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_OPEN);
+	CDIPYSView* pViewAnother = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocAnother = pViewAnother->GetDocument();
+
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+	pDoc->m_MatOpen.convertTo(pDoc->m_MatOpen, CV_32FC3, 1.0 / 255.0);
+	pDocAnother->m_MatOpen.convertTo(pDocAnother->m_MatOpen, CV_32FC3, 1.0 / 255.0);
+
+	multiply(pDoc->m_MatOpen, pDocAnother->m_MatOpen, pDocNew->m_MatOpen);
+
+	pDocNew->m_MatOpen = pDoc->m_MatOpen + pDocAnother->m_MatOpen - pDocNew->m_MatOpen;
+
+	pDocNew->m_MatOpen.convertTo(pDocNew->m_MatOpen, CV_8UC3, 255);
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnArithmeticExclusion()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_OPEN);
+	CDIPYSView* pViewAnother = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocAnother = pViewAnother->GetDocument();
+
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+
+	pDoc->m_MatOpen.convertTo(pDoc->m_MatOpen, CV_32FC3, 1.0 / 255.0);
+	pDocAnother->m_MatOpen.convertTo(pDocAnother->m_MatOpen, CV_32FC3, 1.0 / 255.0);
+
+	multiply(pDoc->m_MatOpen, pDocAnother->m_MatOpen, pDocNew->m_MatOpen);
+
+	pDocNew->m_MatOpen = pDoc->m_MatOpen + pDocAnother->m_MatOpen - 2 * pDocNew->m_MatOpen;
+	pDocNew->m_MatOpen.convertTo(pDocNew->m_MatOpen, CV_8UC3, 255);
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnArithmeticDifference()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_OPEN);
+	CDIPYSView* pViewAnother = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocAnother = pViewAnother->GetDocument();
+
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+
+	pDocNew->m_MatOpen = abs(pDoc->m_MatOpen - pDocAnother->m_MatOpen);
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+
+}
+
+
+void CDIPYSView::OnArithmeticNegative()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+
+	pDocNew->m_MatOpen = cv::Scalar(255, 255, 255) - pDoc->m_MatOpen;
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+
+
+}
+
+
+void CDIPYSView::OnArithmeticColordodge()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_OPEN);
+	CDIPYSView* pViewAnother = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocAnother = pViewAnother->GetDocument();
+
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+	divide(pDoc->m_MatOpen, cv::Scalar(255, 255, 255) - pDocAnother->m_MatOpen, pDocNew->m_MatOpen);
+	cv::normalize(pDocNew->m_MatOpen, pDocNew->m_MatOpen, 0, 255, cv::NORM_MINMAX);
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnArithmeticColorburn()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_OPEN);
+	CDIPYSView* pViewAnother = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocAnother = pViewAnother->GetDocument();
+
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+	divide(cv::Scalar(255, 255, 255) - pDoc->m_MatOpen, pDocAnother->m_MatOpen, pDocNew->m_MatOpen);
+	pDocNew->m_MatOpen = cv::Scalar(255, 255, 255) - pDocNew->m_MatOpen;
+	cv::normalize(pDocNew->m_MatOpen, pDocNew->m_MatOpen, 0, 255, cv::NORM_MINMAX);
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
 }
