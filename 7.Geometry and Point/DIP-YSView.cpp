@@ -91,6 +91,31 @@ BEGIN_MESSAGE_MAP(CDIPYSView, CScrollView)
 	ON_COMMAND(ID_LOGIC_COMPAREAND, &CDIPYSView::OnLogicCompareand)
 	ON_COMMAND(ID_LOGIC_COMPAREOR, &CDIPYSView::OnLogicCompareor)
 	ON_COMMAND(ID_LOGIC_COMPAREXOR, &CDIPYSView::OnLogicComparexor)
+	ON_COMMAND(ID_GEOMETRY_TRANSLATE, &CDIPYSView::OnGeometryTranslate)
+	ON_COMMAND(ID_GEOMETRY_TRANSLATESCALE, &CDIPYSView::OnGeometryTranslatescale)
+	ON_COMMAND(ID_GEOMETRY_TRANSLATEAFFINE, &CDIPYSView::OnGeometryTranslateaffine)
+	ON_COMMAND(ID_GEOMETRY_SCALENEAREST, &CDIPYSView::OnGeometryScalenearest)
+	ON_COMMAND(ID_GEOMETRY_SCALEBILINEAR, &CDIPYSView::OnGeometryScalebilinear)
+	ON_COMMAND(ID_GEOMETRY_SCALEBICUBIC, &CDIPYSView::OnGeometryScalebicubic)
+	ON_COMMAND(ID_GEOMETRY_SCALEBILINEAREXACT, &CDIPYSView::OnGeometryScalebilinearexact)
+	ON_COMMAND(ID_GEOMETRY_ROTATE90, &CDIPYSView::OnGeometryRotate90)
+	ON_COMMAND(ID_GEOMETRY_CLOCKWISE, &CDIPYSView::OnGeometryClockwise)
+	ON_COMMAND(ID_GEOMETRY_ROTATE270, &CDIPYSView::OnGeometryRotate270)
+	ON_COMMAND(ID_GEOMETRY_ROTATE, &CDIPYSView::OnGeometryRotate)
+	ON_COMMAND(ID_GEOMETRY_ROTATESCALE, &CDIPYSView::OnGeometryRotatescale)
+	ON_COMMAND(ID_GEOMETRY_SHEAR, &CDIPYSView::OnGeometryShear)
+	ON_COMMAND(ID_GEOMETRY_AFFINE, &CDIPYSView::OnGeometryAffine)
+	ON_COMMAND(ID_GEOMETRY_MIRROR, &CDIPYSView::OnGeometryMirror)
+	ON_COMMAND(ID_GEOMETRY_MIRRORVERTICAL, &CDIPYSView::OnGeometryMirrorvertical)
+	ON_COMMAND(ID_GEOMETRY_MIRRORCOMEPLETELY, &CDIPYSView::OnGeometryMirrorcomepletely)
+	ON_COMMAND(ID_GEOMETRY_TRANSPOSE, &CDIPYSView::OnGeometryTranspose)
+	ON_COMMAND(ID_GEOMETRY_PERSPECTIVE, &CDIPYSView::OnGeometryPerspective)
+	ON_COMMAND(ID_GEOMETRY_POINTS, &CDIPYSView::OnGeometryPoints)
+	ON_WM_LBUTTONUP()
+	ON_COMMAND(ID_GEOMETRY_TWIRL, &CDIPYSView::OnGeometryTwirl)
+	ON_COMMAND(ID_GEOMETRY_RIPPLE, &CDIPYSView::OnGeometryRipple)
+	ON_COMMAND(ID_GEOMETRY_SPHERICAL, &CDIPYSView::OnGeometrySpherical)
+	ON_COMMAND(ID_GEOMETRY_STITCH, &CDIPYSView::OnGeometryStitch)
 END_MESSAGE_MAP()
 
 // CDIPYSView 构造/析构
@@ -1380,6 +1405,8 @@ void CDIPYSView::OnArithmeticAlpha()
 	{
 		return;
 	}
+
+
 	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
 	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
 	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
@@ -2234,5 +2261,997 @@ void CDIPYSView::OnLogicComparexor()
 	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
 	pViewNew->OnInitialUpdate();
 
+
+}
+
+
+void CDIPYSView::OnGeometryTranslate()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	int nXOffset;
+	int nYOffset;
+	nXOffset = 20;
+	nYOffset = 40;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = nXOffset;
+	DialogSampleOne.m_fYStep = nYOffset;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		nXOffset = DialogSampleOne.m_fXStep;
+		nYOffset = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+
+	CMainFrame* pFrame = (CMainFrame*)AfxGetApp()->m_pMainWnd;
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+	int rows = pDocNew->m_MatOpen.rows;
+	int cols = pDocNew->m_MatOpen.cols;
+	for (int r = 0; r < rows; r++) {
+		for (int c = 0; c < cols; c++) {
+			int cc = c - nXOffset;
+			int rr = r - nYOffset;
+			//边界判断
+			if (cc >= 0 && rr >= 0 && cc < rows && rr < cols)
+			{
+				pDocNew->m_MatOpen.at<Vec3b>(r, c) = pDoc->m_MatOpen.ptr<Vec3b>(rr)[cc];
+			}
+		}
+	}
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryTranslatescale()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	int height;
+	int width;
+	height = 20;
+	width = 40;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = width;
+	DialogSampleOne.m_fYStep = height;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		height = DialogSampleOne.m_fXStep;
+		width = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+
+	CMainFrame* pFrame = (CMainFrame*)AfxGetApp()->m_pMainWnd;
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows + abs(height),
+		pDoc->m_MatOpen.cols + abs(width), pDoc->m_MatOpen.type());
+	int rows = pDocNew->m_MatOpen.rows;
+	int cols = pDocNew->m_MatOpen.cols;
+	for (int r = 0; r < rows; r++) {
+		for (int c = 0; c < cols; c++) {
+			int cc = c - width;
+			int rr = r - height;
+			//边界判断
+			if (cc >= 0 && rr >= 0 && cc < width && rr < height)
+			{
+				pDocNew->m_MatOpen.at<Vec3b>(r, c) = pDoc->m_MatOpen.ptr<Vec3b>(rr)[cc];
+			}
+		}
+	}
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryTranslateaffine()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	int nXOffset;
+	int nYOffset;
+	nXOffset = 20;
+	nYOffset = 40;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = nXOffset;
+	DialogSampleOne.m_fYStep = nYOffset;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		nXOffset = DialogSampleOne.m_fXStep;
+		nYOffset = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+
+	CMainFrame* pFrame = (CMainFrame*)AfxGetApp()->m_pMainWnd;
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows + abs(nYOffset),pDoc->m_MatOpen.cols + abs(nXOffset), pDoc->m_MatOpen.type());
+	cv::Mat t_mat = cv::Mat::zeros(2, 3, CV_32FC1);
+	t_mat.at<float>(0, 0) = 1;
+	t_mat.at<float>(0, 2) = nXOffset; //水平平移量  
+	t_mat.at<float>(1, 1) = 1;
+	t_mat.at<float>(1, 2) = nYOffset; //竖直平移量  
+
+	//根据平移矩阵进行仿射变换  
+	cv::warpAffine(pDoc->m_MatOpen, pDocNew->m_MatOpen, t_mat, pDocNew->m_MatOpen.size());
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryScalenearest()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	float fXScale;
+	float fYScale;
+	fXScale = 2;
+	fYScale = 2;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fXScale;
+	DialogSampleOne.m_fYStep = fYScale;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fXScale = DialogSampleOne.m_fXStep;
+		fYScale = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows * fYScale,pDoc->m_MatOpen.cols * fXScale, pDoc->m_MatOpen.type());
+	resize(pDoc->m_MatOpen, pDocNew->m_MatOpen, pDocNew->m_MatOpen.size(),fXScale, fYScale, INTER_NEAREST);
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryScalebilinear()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	float fXScale;
+	float fYScale;
+	fXScale = 2;
+	fYScale = 2;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fXScale;
+	DialogSampleOne.m_fYStep = fYScale;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fXScale = DialogSampleOne.m_fXStep;
+		fYScale = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows * fYScale,pDoc->m_MatOpen.cols * fXScale, pDoc->m_MatOpen.type());
+	resize(pDoc->m_MatOpen, pDocNew->m_MatOpen, pDocNew->m_MatOpen.size(),fXScale, fYScale, INTER_LINEAR);
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryScalebicubic()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	float fXScale;
+	float fYScale;
+	fXScale = 2;
+	fYScale = 2;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fXScale;
+	DialogSampleOne.m_fYStep = fYScale;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fXScale = DialogSampleOne.m_fXStep;
+		fYScale = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows * fYScale,
+	pDoc->m_MatOpen.cols * fXScale, pDoc->m_MatOpen.type());
+	resize(pDoc->m_MatOpen, pDocNew->m_MatOpen, pDocNew->m_MatOpen.size(),
+	fXScale, fYScale, INTER_CUBIC);
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryScalebilinearexact()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	float fXScale;
+	float fYScale;
+	fXScale = 2;
+	fYScale = 2;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fXScale;
+	DialogSampleOne.m_fYStep = fYScale;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fXScale = DialogSampleOne.m_fXStep;
+		fYScale = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows * fYScale,
+		pDoc->m_MatOpen.cols * fXScale, pDoc->m_MatOpen.type());
+	resize(pDoc->m_MatOpen, pDocNew->m_MatOpen, pDocNew->m_MatOpen.size(),
+		fXScale, fYScale, INTER_LINEAR_EXACT);
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryRotate90()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.cols,
+		pDoc->m_MatOpen.rows, pDoc->m_MatOpen.type());
+	int height = pDocNew->m_MatOpen.rows;
+	int width = pDocNew->m_MatOpen.cols;
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			pDocNew->m_MatOpen.at<Vec3b>(i, j) = pDoc->m_MatOpen.ptr<Vec3b>
+				(pDoc->m_MatOpen.rows - j - 1)[i];
+		}
+	}
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryClockwise()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows,
+		pDoc->m_MatOpen.cols, pDoc->m_MatOpen.type());
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryRotate270()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.cols,
+		pDoc->m_MatOpen.rows, pDoc->m_MatOpen.type());
+	int height = pDocNew->m_MatOpen.rows;
+	int width = pDocNew->m_MatOpen.cols;
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			pDocNew->m_MatOpen.at<Vec3b>(i, j) =
+				pDoc->m_MatOpen.ptr<Vec3b>(j)[pDoc->m_MatOpen.cols - i - 1];
+		}
+	}
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryRotate()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc) return;
+	float fAngle = 45;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fAngle;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fAngle = DialogSampleOne.m_fXStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows,
+		pDoc->m_MatOpen.cols, pDoc->m_MatOpen.type());
+	// get the center coordinates of the image to create the 2D rotation matrix
+	Point2f center((pDoc->m_MatOpen.cols - 1) / 2.0, (pDoc->m_MatOpen.rows - 1) / 2.0);
+	// using getRotationMatrix2D() to get the rotation matrix
+	Mat rotation_matix = getRotationMatrix2D(center, fAngle, 1.0);
+	// rotate the image using warpAffine
+	warpAffine(pDoc->m_MatOpen, pDocNew->m_MatOpen, rotation_matix, pDocNew->m_MatOpen.size());
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryRotatescale()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc) return;
+	float fAngle = 45;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fAngle;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fAngle = DialogSampleOne.m_fXStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+
+	int h = pDoc->m_MatOpen.rows;
+	int w = pDoc->m_MatOpen.cols;
+
+	float fArc = fAngle / 180 * CV_PI;
+
+	int h1 = static_cast<int>(w * fabs(sin(fArc)) + h * fabs(cos(fArc)));
+	int w1 = static_cast<int>(w * fabs(cos(fArc)) + h * fabs(sin(fArc)));
+
+	pDocNew->m_MatOpen = Mat::zeros(h1, w1, pDoc->m_MatOpen.type());
+
+	// get the center coordinates of the image to create the 2D rotation matrix
+	Point2f center((pDoc->m_MatOpen.cols - 1) / 2.0, (pDoc->m_MatOpen.rows - 1) / 2.0);
+	// using getRotationMatrix2D() to get the rotation matrix
+	Mat rotation_matix = getRotationMatrix2D(center, fAngle, 1.0);
+
+	rotation_matix.at<double>(0, 2) += (w1 - w) / 2;
+	rotation_matix.at<double>(1, 2) += (h1 - h) / 2;
+	cv::warpAffine(pDoc->m_MatOpen, pDocNew->m_MatOpen, rotation_matix, pDocNew->m_MatOpen.size());
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryShear()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	float fShearX = 0.3;
+	float fShearY = 0.3;
+
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fShearX;
+	DialogSampleOne.m_fYStep = fShearY;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fShearX = DialogSampleOne.m_fXStep;
+		fShearY = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)AfxGetApp()->m_pMainWnd;
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows + pDoc->m_MatOpen.cols * fShearY,
+		pDoc->m_MatOpen.cols + pDoc->m_MatOpen.rows * fShearX, pDoc->m_MatOpen.type());
+
+	float warpMatValues5[] = { 1.0, fShearX, 0, fShearY, 1.0, 0 };
+	Mat warpMat(2, 3, CV_32F, warpMatValues5);
+	warpAffine(pDoc->m_MatOpen, pDocNew->m_MatOpen, warpMat, pDocNew->m_MatOpen.size());
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryAffine()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+
+	Point2f src_points[3];
+	Point2f dst_points[3];
+
+	src_points[0] = Point2f(0, 0);
+	src_points[1] = Point2f(0, (float)(pDoc->m_MatOpen.rows - 1));
+	src_points[2] = Point2f((float)(pDoc->m_MatOpen.cols - 1), (float)(pDoc->m_MatOpen.rows - 1));
+
+	dst_points[0] = Point2f((float)(0, 0));
+	dst_points[1] = Point2f((float)(pDoc->m_MatOpen.cols - 1) * 0.1, (float)(pDoc->m_MatOpen.rows - 1) * 0.5);
+	dst_points[2] = Point2f((float)(pDoc->m_MatOpen.cols - 1) * 0.8, (float)(pDoc->m_MatOpen.rows - 1) * 0.8);
+	CMainFrame* pFrame = (CMainFrame*)AfxGetApp()->m_pMainWnd;
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows, pDoc->m_MatOpen.cols, pDoc->m_MatOpen.type());
+
+
+	Mat affine;
+	affine = getAffineTransform(src_points, dst_points);
+
+	warpAffine(pDoc->m_MatOpen, pDocNew->m_MatOpen, affine, pDocNew->m_MatOpen.size());
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryMirror()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+	flip(pDoc->m_MatOpen, pDocNew->m_MatOpen, 1);
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+
+}
+
+
+void CDIPYSView::OnGeometryMirrorvertical()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+	flip(pDoc->m_MatOpen, pDocNew->m_MatOpen, 0);
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+
+}
+
+
+void CDIPYSView::OnGeometryMirrorcomepletely()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.size(), pDoc->m_MatOpen.type());
+	flip(pDoc->m_MatOpen, pDocNew->m_MatOpen, -1);
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+
+}
+
+
+void CDIPYSView::OnGeometryTranspose()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewTranspose = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocTranspose = pViewTranspose->GetDocument();
+	pDocTranspose->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.cols, pDoc->m_MatOpen.rows, pDoc->m_MatOpen.type());
+	transpose(pDoc->m_MatOpen, pDocTranspose->m_MatOpen);
+
+	pDoc->MatToCImage(pDocTranspose->m_MatOpen, pDocTranspose->m_ImageOpen);
+	pViewTranspose->OnInitialUpdate();
+
+
+}
+
+
+void CDIPYSView::OnGeometryPerspective()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows,
+		pDoc->m_MatOpen.cols, pDoc->m_MatOpen.type());
+	Mat Perspective;
+	Perspective = getPerspectiveTransform(m_pointsSrc, m_pointsDst);
+	warpPerspective(pDoc->m_MatOpen, pDocNew->m_MatOpen, Perspective, pDocNew->m_MatOpen.size());
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryPoints()
+{
+	m_nStart = 0;
+
+}
+
+
+void CDIPYSView::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	CClientDC DC(this);
+	if (m_nStart < 4)
+	{
+		m_pointsSrc[m_nStart].x = point.x + GetScrollPosition().x;
+		m_pointsSrc[m_nStart].y = point.y + GetScrollPosition().y;
+		DC.Ellipse(m_pointsSrc[m_nStart].x - 3, m_pointsSrc[m_nStart].y - 3,
+			m_pointsSrc[m_nStart].x + 3, m_pointsSrc[m_nStart].y + 3);
+		m_nStart = m_nStart + 1;
+	}
+	else
+	{
+		m_pointsDst[m_nStart - 4].x = point.x + GetScrollPosition().x;
+		m_pointsDst[m_nStart - 4].y = point.y + GetScrollPosition().y;
+		DC.Ellipse(m_pointsDst[m_nStart - 4].x - 3, m_pointsDst[m_nStart - 4].y - 3,
+			m_pointsDst[m_nStart - 4].x + 3, m_pointsDst[m_nStart - 4].y + 3);
+		m_nStart = m_nStart + 1;
+	}
+
+	CScrollView::OnLButtonUp(nFlags, point);
+}
+
+
+void CDIPYSView::OnGeometryTwirl()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	float fAngle;
+	fAngle = 45;
+
+	float fArc;
+	fArc = float(fAngle * 3.1415927 / 180);
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fAngle;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fAngle = DialogSampleOne.m_fXStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows,
+		pDoc->m_MatOpen.cols, pDoc->m_MatOpen.type());
+	int nX; int nY;
+	COLORREF PixelColor;
+	int nXOriginal;
+	int nYOriginal;
+
+	int nDx;
+	int nDy;
+
+	int nXc;
+	int nYc;
+
+	nXc = pDoc->m_MatOpen.cols / 2;
+	nYc = pDoc->m_MatOpen.rows / 2;
+	int nR;
+
+	int nRMax;
+
+	nRMax = sqrt(float(pDoc->m_MatOpen.cols * pDoc->m_MatOpen.cols
+		+ pDoc->m_MatOpen.rows * pDoc->m_MatOpen.rows)) / 2;
+	float fBeta;
+	for (nY = 0; nY < pDocNew->m_MatOpen.rows; nY++)
+	{
+		for (nX = 0; nX < pDocNew->m_MatOpen.cols; nX++)
+		{
+			nDx = nX - nXc;
+			nDy = nY - nYc;
+			nR = sqrt(float(nDx * nDx + nDy * nDy));
+			fBeta = atan2(nDy, nDx * 1.0) + fArc * (nRMax - nR) / nRMax;
+			if (nR <= nRMax)
+			{
+				nXOriginal = int(nXc + nR * cos(fBeta));
+			}
+			else
+			{
+				nXOriginal = nX;
+			}
+			if (nR <= nRMax)
+			{
+				nYOriginal = int(nYc + nR * sin(fBeta));
+			}
+			else
+			{
+				nYOriginal = nY;
+			}
+
+
+			if (nYOriginal < 0)
+			{
+				continue;
+			}
+			if ((nXOriginal) < 0)
+			{
+				continue;
+			}
+			if (nXOriginal >= pDoc->m_MatOpen.cols)
+			{
+				continue;
+			}
+			if (nYOriginal >= pDoc->m_MatOpen.rows)
+			{
+				continue;
+			}
+
+			pDocNew->m_MatOpen.at<Vec3b>(nY, nX) =
+				pDoc->m_MatOpen.ptr<Vec3b>(nYOriginal)[nXOriginal];
+		}
+	}
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryRipple()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	float fAx = 32;
+	float fTx = 4;
+	float fAy = 16;
+	float fTy = 2;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fAx;
+	DialogSampleOne.m_fYStep = fTx;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fAx = DialogSampleOne.m_fXStep;
+		fTx = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	DialogSampleOne.m_fXStep = fAy;
+	DialogSampleOne.m_fYStep = fTy;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fAy = DialogSampleOne.m_fXStep;
+		fTy = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	double dAx;
+	dAx = pDoc->m_ImageOpen.GetWidth() / fAx;
+	double dTx;
+	dTx = pDoc->m_ImageOpen.GetWidth() / fTx;
+
+	double dAy;
+	dAy = pDoc->m_ImageOpen.GetHeight() / fAy;
+	double dTy;
+	dTy = pDoc->m_ImageOpen.GetHeight() / fTy;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows,
+		pDoc->m_MatOpen.cols, pDoc->m_MatOpen.type());
+	int nX; int nY;
+	COLORREF PixelColor;
+	int nXOriginal;
+	int nYOriginal;
+	for (nY = 0; nY < pDocNew->m_MatOpen.rows; nY++)
+	{
+		for (nX = 0; nX < pDocNew->m_MatOpen.cols; nX++)
+		{
+			nXOriginal = nX + dAx * sin(2 * 3.1415927 * nY / dTx);
+			nYOriginal = nY + dAy * sin(2 * 3.1415927 * nX / dTy);
+
+			if (nYOriginal < 0)
+			{
+				continue;
+			}
+			if ((nXOriginal) < 0)
+			{
+				continue;
+			}
+
+			if (nXOriginal >= pDoc->m_MatOpen.cols)
+			{
+				continue;
+			}
+			if (nYOriginal >= pDoc->m_MatOpen.rows)
+			{
+				continue;
+			}
+			pDocNew->m_MatOpen.at<Vec3b>(nY, nX) =
+				pDoc->m_MatOpen.ptr<Vec3b>(nYOriginal)[nXOriginal];
+		}
+	}
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometrySpherical()
+{
+	CDIPYSDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	float fRadius;
+	fRadius = pDoc->m_ImageOpen.GetWidth() / 2;
+
+	float fRefraction;
+	fRefraction = 1.8;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fRadius;
+	DialogSampleOne.m_fYStep = fRefraction;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRadius = DialogSampleOne.m_fXStep;
+		fRefraction = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewNew =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocNew = pViewNew->GetDocument();
+	pDocNew->m_MatOpen = Mat::zeros(pDoc->m_MatOpen.rows,
+		pDoc->m_MatOpen.cols, pDoc->m_MatOpen.type());
+	int nX; int nY;
+	COLORREF PixelColor;
+	int nXOriginal;
+	int nYOriginal;
+
+	int nDx;
+	int nDy;
+
+	int nXc;
+	int nYc;
+
+	nXc = pDoc->m_MatOpen.cols / 2;
+	nYc = pDoc->m_MatOpen.rows / 2;
+
+	int nR;
+
+	int nRMax;
+
+	nRMax = pDoc->m_MatOpen.cols / 2;
+
+	double dRo;
+	dRo = 1.8;
+
+	float fBetaX;
+	float fBetaY;
+
+	double dZ;
+
+	for (nY = 0; nY < pDoc->m_MatOpen.rows; nY++)
+	{
+		for (nX = 0; nX < pDocNew->m_MatOpen.cols; nX++)
+		{
+			nDx = nX - nXc;
+			nDy = nY - nYc;
+			nR = sqrt(float(nDx * nDx + nDy * nDy));
+			dZ = sqrt(float(nRMax * nRMax - nR * nR));
+
+
+			fBetaX = (1 - 1 / dRo) * asin(nDx * 1.0 / sqrt(float(nDx * nDx + dZ * dZ)));
+			fBetaY = (1 - 1 / dRo) * asin(nDy * 1.0 / sqrt(float(nDy * nDy + dZ * dZ)));
+
+			if (nR <= nRMax)
+			{
+				nXOriginal = int(nX - dZ * tan(fBetaX));
+			}
+			else
+			{
+				nXOriginal = nX;
+			}
+
+			if (nR <= nRMax)
+			{
+				nYOriginal = int(nY - dZ * tan(fBetaY));
+			}
+			else
+			{
+				nYOriginal = nY;
+			}
+
+			if (nYOriginal < 0)
+			{
+				continue;
+			}
+			if ((nXOriginal) < 0)
+			{
+				continue;
+			}
+
+			if (nXOriginal >= pDoc->m_MatOpen.cols)
+			{
+				continue;
+			}
+			if (nYOriginal >= pDoc->m_MatOpen.rows)
+			{
+				continue;
+			}
+			pDocNew->m_MatOpen.at<Vec3b>(nY, nX) =
+				pDoc->m_MatOpen.ptr<Vec3b>(nYOriginal)[nXOriginal];
+		}
+	}
+
+	pDoc->MatToCImage(pDocNew->m_MatOpen, pDocNew->m_ImageOpen);
+	pViewNew->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnGeometryStitch()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_OPEN);
+	CDIPYSView* pViewInAnother = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocInAnother = pViewInAnother->GetDocument();
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	vector<Mat>images;
+	images.push_back(pDocIn->m_MatOpen);
+	images.push_back(pDocInAnother->m_MatOpen);
+
+	Ptr<Stitcher>stitcher = Stitcher::create();
+
+	Stitcher::Status status = stitcher->stitch(images, pDocOut->m_MatOpen);
+
+	if (status != Stitcher::OK)
+		return;
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
 
 }
