@@ -116,7 +116,23 @@ BEGIN_MESSAGE_MAP(CDIPYSView, CScrollView)
 	ON_COMMAND(ID_GEOMETRY_RIPPLE, &CDIPYSView::OnGeometryRipple)
 	ON_COMMAND(ID_GEOMETRY_SPHERICAL, &CDIPYSView::OnGeometrySpherical)
 	ON_COMMAND(ID_GEOMETRY_STITCH, &CDIPYSView::OnGeometryStitch)
-END_MESSAGE_MAP()
+	ON_COMMAND(ID_POINT_BRIGHTNESSMAT, &CDIPYSView::OnPointBrightnessmat)
+	ON_COMMAND(ID_POINT_BRIGHTNESS, &CDIPYSView::OnPointBrightness)
+	ON_COMMAND(ID_POINT_CONTRASTMAT, &CDIPYSView::OnPointContrastmat)
+	ON_COMMAND(ID_POINT_CONTRAST, &CDIPYSView::OnPointContrast)
+	ON_COMMAND(ID_POINT_AUTOCONTRAST, &CDIPYSView::OnPointAutocontrast)
+	ON_COMMAND(ID_POINT_GLOBALMAT, &CDIPYSView::OnPointGlobalmat)
+	ON_COMMAND(ID_POINT_GLOBAL, &CDIPYSView::OnPointGlobal)
+	ON_COMMAND(ID_POINT_LOCAL, &CDIPYSView::OnPointLocal)
+		ON_COMMAND(ID_POINT_PIECEWISE, &CDIPYSView::OnPointPiecewise)
+		ON_COMMAND(ID_POINT_LOGARITHMIC, &CDIPYSView::OnPointLogarithmic)
+		ON_COMMAND(ID_POINT_EXPONENT, &CDIPYSView::OnPointExponent)
+		ON_COMMAND(ID_POINT_POWER, &CDIPYSView::OnPointPower)
+		ON_COMMAND(ID_POINT_BLACKWHITE, &CDIPYSView::OnPointBlackwhite)
+		ON_COMMAND(ID_POINT_PRESERVE, &CDIPYSView::OnPointPreserve)
+		ON_COMMAND(ID_POINT_BIT, &CDIPYSView::OnPointBit)
+		ON_COMMAND(ID_POINT_AUTOCONTRASTMAT, &CDIPYSView::OnPointAutocontrastmat)
+		END_MESSAGE_MAP()
 
 // CDIPYSView 构造/析构
 
@@ -3254,4 +3270,1553 @@ void CDIPYSView::OnGeometryStitch()
 	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
 	pViewOut->OnInitialUpdate();
 
+}
+
+
+void CDIPYSView::OnPointBrightnessmat()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	int nRAdd;
+	int nGAdd;
+	int nBAdd;
+
+	nRAdd = 20;
+	nGAdd = 40;
+	nBAdd = 60;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = nRAdd;
+	DialogSampleOne.m_fYStep = nGAdd;
+	DialogSampleOne.m_fZ = nBAdd;
+
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		nRAdd = DialogSampleOne.m_fXStep;
+		nGAdd = DialogSampleOne.m_fYStep;
+		nBAdd = DialogSampleOne.m_fZ;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),pDocIn->m_MatOpen.type());
+	Mat black = Mat::zeros(pDocIn->m_MatOpen.size(), pDocIn->m_MatOpen.type());
+	black = Scalar(nBAdd, nGAdd, nRAdd);
+	add(pDocIn->m_MatOpen, black, pDocOut->m_MatOpen);
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnPointBrightness()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	int nRAdd;
+	int nGAdd;
+	int nBAdd;
+
+	nRAdd = 20;
+	nGAdd = 40;
+	nBAdd = 60;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = nRAdd;
+	DialogSampleOne.m_fYStep = nGAdd;
+	DialogSampleOne.m_fZ = nBAdd;
+
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		nRAdd = DialogSampleOne.m_fXStep;
+		nGAdd = DialogSampleOne.m_fYStep;
+		nBAdd = DialogSampleOne.m_fZ;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	int height = pDocOut->m_MatOpen.rows;//图片的长度
+	int width = pDocOut->m_MatOpen.cols;//图片的宽度
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			if (pDocOut->m_MatOpen.channels() == 3)
+			{
+				int b = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+				int g = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+				int r = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(b + nBAdd);
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = saturate_cast<uchar>(g + nGAdd);
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = saturate_cast<uchar>(r + nRAdd);
+			}
+			else if (pDocOut->m_MatOpen.channels() == 1)
+			{
+				float v = pDocIn->m_MatOpen.at<uchar>(row, col);
+				pDocOut->m_MatOpen.at<uchar>(row, col) = saturate_cast<uchar>(v + nBAdd);
+			}
+		}
+	}
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnPointContrastmat()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	float fRMultiply;
+	float fGMultiply;
+	float fBMultiply;
+
+	fRMultiply = 0.5;
+	fGMultiply = 1;
+	fBMultiply = 2;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fRMultiply;
+	DialogSampleOne.m_fYStep = fGMultiply;
+	DialogSampleOne.m_fZ = fBMultiply;
+
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRMultiply = DialogSampleOne.m_fXStep;
+		fGMultiply = DialogSampleOne.m_fYStep;
+		fBMultiply = DialogSampleOne.m_fZ;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	Mat black = Mat::zeros(pDocIn->m_MatOpen.size(), pDocIn->m_MatOpen.type());
+	black = Scalar(fBMultiply, fGMultiply, fRMultiply);
+	pDocOut->m_MatOpen = pDocIn->m_MatOpen.mul(black);
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+}
+
+
+void CDIPYSView::OnPointContrast()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	float fRMultiply;
+	float fGMultiply;
+	float fBMultiply;
+
+	fRMultiply = 0.5;
+	fGMultiply = 1;
+	fBMultiply = 2;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fRMultiply;
+	DialogSampleOne.m_fYStep = fGMultiply;
+	DialogSampleOne.m_fZ = fBMultiply;
+
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRMultiply = DialogSampleOne.m_fXStep;
+		fGMultiply = DialogSampleOne.m_fYStep;
+		fBMultiply = DialogSampleOne.m_fZ;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	int height = pDocOut->m_MatOpen.rows;
+	int width = pDocOut->m_MatOpen.cols;
+
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			if (pDocOut->m_MatOpen.channels() == 3)
+			{
+				int b = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+				int g = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+				int r = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(b * fBMultiply);
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = saturate_cast<uchar>(g * fGMultiply);
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = saturate_cast<uchar>(r * fRMultiply);
+			}
+
+			else if (pDocOut->m_MatOpen.channels() == 1)
+			{
+				float v = pDocIn->m_MatOpen.at<uchar>(row, col);
+				pDocOut->m_MatOpen.at<uchar>(row, col) =
+					saturate_cast<uchar>(v * fRMultiply);
+			}
+		}
+	}
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnPointAutocontrast()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	int nALowRed = 255;
+	int nAHighRed = 0;
+
+	int nALowGreen = 255;
+	int nAHighGreen = 0;
+
+	int nALowBlue = 255;
+	int nAHighBlue = 0;
+	int nAMinRed = 0;
+	int nAMaxRed = 255;
+
+	int nAMinGreen = 0;
+	int nAMaxGreen = 255;
+
+	int nAMinBlue = 0;
+	int nAMaxBlue = 255;
+
+	int col; int row;
+	int nROne; int nGOne; int nBOne;
+	for (row = 0; row < pDocIn->m_MatOpen.rows; row++)
+	{
+		for (col = 0; col < pDocIn->m_MatOpen.cols; col++)
+		{
+			nROne = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+			if (nROne < nALowRed)
+			{
+				nALowRed = nROne;
+			}
+			if (nROne > nAHighRed)
+			{
+				nAHighRed = nROne;
+			}
+
+			nGOne = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+			if (nGOne < nALowGreen)
+			{
+				nALowGreen = nGOne;
+			}
+			if (nGOne > nAHighGreen)
+			{
+				nAHighGreen = nGOne;
+			}
+			nBOne = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+			if (nBOne < nALowBlue)
+			{
+				nALowBlue = nBOne;
+			}
+			if (nBOne > nAHighBlue)
+			{
+				nAHighBlue = nBOne;
+			}
+		}
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	for (row = 0; row < pDocOut->m_MatOpen.rows; row++)
+	{
+		for (col = 0; col < pDocOut ->m_MatOpen.cols; col++)
+		{
+
+			nROne = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+			nROne = int(nAMinRed + (nROne - nALowRed) * (nAMaxRed - nAMinRed) * 1.0 / (nAHighRed - nALowRed));
+
+			nGOne = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+			nGOne = int(nAMinGreen + (nGOne - nALowGreen) * (nAMaxGreen - nAMinGreen) * 1.0 / (nAHighGreen - nALowGreen));
+
+			nBOne = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+			nBOne = int(nAMinBlue + (nBOne - nALowBlue) * (nAMaxBlue - nAMinBlue) * 1.0 / (nAHighBlue - nALowBlue));
+
+			pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(nBOne);
+			pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = saturate_cast<uchar>(nGOne);
+			pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = saturate_cast<uchar>(nROne);
+		}
+	}
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnPointGlobalmat()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	float fRAlpha;
+	float fRBeta;
+	fRAlpha = 2;
+	fRBeta = 50;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fRAlpha;
+	DialogSampleOne.m_fYStep = fRBeta;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRAlpha = DialogSampleOne.m_fXStep;
+		fRBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+
+	float fGAlpha;
+	float fGBeta;
+	fGAlpha = 2;
+	fGBeta = 50;
+	DialogSampleOne.m_fXStep = fGAlpha;
+	DialogSampleOne.m_fYStep = fGBeta;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fGAlpha = DialogSampleOne.m_fXStep;
+		fGBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	float fBAlpha;
+	float fBBeta;
+	fBAlpha = 2;
+	fBBeta = 50;
+	DialogSampleOne.m_fXStep = fBAlpha;
+	DialogSampleOne.m_fYStep = fBBeta;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fBAlpha = DialogSampleOne.m_fXStep;
+		fBBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	Mat black = Mat::zeros(pDocIn->m_MatOpen.size(), pDocIn->m_MatOpen.type());
+	black = Scalar(fBAlpha, fGAlpha, fRAlpha);
+	pDocOut->m_MatOpen = pDocIn->m_MatOpen.mul(black);
+
+	black = Scalar(fBBeta, fGBeta, fRBeta);
+	add(pDocOut->m_MatOpen, black, pDocOut->m_MatOpen);
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnPointGlobal()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+
+	float fRAlpha;
+	float fRBeta;
+	fRAlpha = 2;
+	fRBeta = 50;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fRAlpha;
+	DialogSampleOne.m_fYStep = fRBeta;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRAlpha = DialogSampleOne.m_fXStep;
+		fRBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+
+	float fGAlpha;
+	float fGBeta;
+	fGAlpha = 2;
+	fGBeta = 50;
+	DialogSampleOne.m_fXStep = fGAlpha;
+	DialogSampleOne.m_fYStep = fGBeta;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fGAlpha = DialogSampleOne.m_fXStep;
+		fGBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+
+	float fBAlpha;
+	float fBBeta;
+	fBAlpha = 2;
+	fBBeta = 50;
+	DialogSampleOne.m_fXStep = fBAlpha;
+	DialogSampleOne.m_fYStep = fBBeta;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fBAlpha = DialogSampleOne.m_fXStep;
+		fBBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+
+	int height = pDocOut->m_MatOpen.rows;
+	int width = pDocOut->m_MatOpen.cols;
+
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			if (pDocOut->m_MatOpen.channels() == 3)
+			{
+				int b = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+				int g = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+				int r = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(b * fBAlpha + fBBeta);
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = saturate_cast<uchar>(g * fGAlpha + fGBeta);
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = saturate_cast<uchar>(r * fRAlpha + fRBeta);
+			}
+			else if (pDocOut->m_MatOpen.channels() == 1)
+			{
+				float v = pDocIn->m_MatOpen.at<uchar>(row, col);
+				pDocOut->m_MatOpen.at<uchar>(row, col) = saturate_cast<uchar>(v * fRAlpha + fRBeta);
+			}
+		}
+	}
+
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+}
+
+
+void CDIPYSView::OnPointLocal()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	//red channel
+	float fRLow;
+	float fRHigh;
+	fRLow = 50;
+	fRHigh = 200;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fRLow;
+	DialogSampleOne.m_fYStep = fRHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRLow = DialogSampleOne.m_fXStep;
+		fRHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	float fRAlpha;
+	float fRBeta;
+	fRAlpha = 2;
+	fRBeta = 50;
+	DialogSampleOne.m_fXStep = fRAlpha;
+	DialogSampleOne.m_fYStep = fRBeta;
+
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRAlpha = DialogSampleOne.m_fXStep;
+		fRBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	//green channel
+	float fGLow;
+	float fGHigh;
+	fGLow = 50;
+	fGHigh = 200;
+	DialogSampleOne.m_fXStep = fGLow;
+	DialogSampleOne.m_fYStep = fGHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fGLow = DialogSampleOne.m_fXStep;
+		fGHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+
+	float fGAlpha;
+	float fGBeta;
+	fGAlpha = 2;
+	fGBeta = 50;
+	DialogSampleOne.m_fXStep = fGAlpha;
+	DialogSampleOne.m_fYStep = fGBeta;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fGAlpha = DialogSampleOne.m_fXStep;
+		fGBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	//blue channel
+	float fBLow;
+	float fBHigh;
+	fBLow = 50;
+	fBHigh = 200;
+	DialogSampleOne.m_fXStep = fBLow;
+	DialogSampleOne.m_fYStep = fBHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fBLow = DialogSampleOne.m_fXStep;
+		fBHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	float fBAlpha;
+	float fBBeta;
+	fBAlpha = 2;
+	fBBeta = 50;
+	DialogSampleOne.m_fXStep = fBAlpha;
+	DialogSampleOne.m_fYStep = fBBeta;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fBAlpha = DialogSampleOne.m_fXStep;
+		fBBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	int height = pDocOut->m_MatOpen.rows;
+	int width = pDocOut->m_MatOpen.cols;
+
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			if (pDocOut->m_MatOpen.channels() == 3)
+			{
+				int b = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+				int g = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+				int r = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+				//blue channel
+				if (b < fBLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 0;
+				}
+				if (b > fBHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 255;
+				}
+				if ((b >= fBLow) && (b <= fBHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(b * fBAlpha + fBBeta);
+				}
+				//green channel
+				if (g < fGLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = 0;
+				}
+				if (b > fGHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = 255;
+				}
+				if ((b >= fGLow) && (b <= fGHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = saturate_cast<uchar>(g * fGAlpha + fGBeta);
+				}
+				//red channel
+				if (r < fRLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = 0;
+				}
+				if (r > fRHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = 255;
+				}
+				if ((r >= fRLow) && (r <= fRHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = saturate_cast<uchar>(r * fRAlpha + fRBeta);
+				}
+			}
+			else if (pDocOut->m_MatOpen.channels() == 1)
+			{
+				float v = pDocIn->m_MatOpen.at<uchar>(row, col);
+				if (v < fRLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 0;
+				}
+				if (v > fRHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 255;
+				}
+				if ((v >= fRLow) && (v <= fRHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(v * fRAlpha + fRBeta);
+				}
+			}
+		}
+	}
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnPointPiecewise()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	//red channel
+	float fRLow;
+	float fRHigh;
+	fRLow = 50;
+	fRHigh = 200;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fRLow;
+	DialogSampleOne.m_fYStep = fRHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRLow = DialogSampleOne.m_fXStep;
+		fRHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	float fRAlphaLow;
+	float fRBetaLow;
+	fRAlphaLow = 0.5;
+	fRBetaLow = 20;
+	DialogSampleOne.m_fXStep = fRAlphaLow;
+	DialogSampleOne.m_fYStep = fRBetaLow;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRAlphaLow = DialogSampleOne.m_fXStep;
+		fRBetaLow = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	float fRAlpha;
+	float fRBeta;
+	fRAlpha = 2;
+	fRBeta = 50;
+	DialogSampleOne.m_fXStep = fRAlpha;
+	DialogSampleOne.m_fYStep = fRBeta;
+
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRAlpha = DialogSampleOne.m_fXStep;
+		fRBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	float fRAlphaHigh;
+	float fRBetaHigh;
+	fRAlphaHigh = 3;
+	fRBetaHigh = -50;
+	DialogSampleOne.m_fXStep = fRAlphaHigh;
+	DialogSampleOne.m_fYStep = fRBetaHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRAlphaHigh = DialogSampleOne.m_fXStep;
+		fRBetaHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	//green channel
+	float fGLow;
+	float fGHigh;
+	fGLow = 50;
+	fGHigh = 200;
+	DialogSampleOne.m_fXStep = fGLow;
+	DialogSampleOne.m_fYStep = fGHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fGLow = DialogSampleOne.m_fXStep;
+		fGHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+
+	float fGAlphaLow;
+	float fGBetaLow;
+	fGAlphaLow = 0.5;
+	fGBetaLow = 20;
+	DialogSampleOne.m_fXStep = fGAlphaLow;
+	DialogSampleOne.m_fYStep = fGBetaLow;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fGAlphaLow = DialogSampleOne.m_fXStep;
+		fGBetaLow = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	float fGAlpha;
+	float fGBeta;
+	fGAlpha = 2;
+	fGBeta = 50;
+	DialogSampleOne.m_fXStep = fGAlpha;
+	DialogSampleOne.m_fYStep = fGBeta;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fGAlpha = DialogSampleOne.m_fXStep;
+		fGBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	float fGAlphaHigh;
+	float fGBetaHigh;
+	fGAlphaHigh = 3;
+	fGBetaHigh = -50;
+	DialogSampleOne.m_fXStep = fGAlphaHigh;
+	DialogSampleOne.m_fYStep = fGBetaHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fGAlphaHigh = DialogSampleOne.m_fXStep;
+		fGBetaHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	//blue channel
+	float fBLow;
+	float fBHigh;
+	fBLow = 50;
+	fBHigh = 200;
+	DialogSampleOne.m_fXStep = fBLow;
+	DialogSampleOne.m_fYStep = fBHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fBLow = DialogSampleOne.m_fXStep;
+		fBHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	float fBAlphaLow;
+	float fBBetaLow;
+	fBAlphaLow = 0.5;
+	fBBetaLow = -20;
+	DialogSampleOne.m_fXStep = fBAlphaLow;
+	DialogSampleOne.m_fYStep = fBBetaLow;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fBAlphaLow = DialogSampleOne.m_fXStep;
+		fBBetaLow = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	float fBAlpha;
+	float fBBeta;
+	fBAlpha = 2;
+	fBBeta = 50;
+	DialogSampleOne.m_fXStep = fBAlpha;
+	DialogSampleOne.m_fYStep = fBBeta;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fBAlpha = DialogSampleOne.m_fXStep;
+		fBBeta = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	float fBAlphaHigh;
+	float fBBetaHigh;
+	fBAlphaHigh = 3;
+	fBBetaHigh = -50;
+	DialogSampleOne.m_fXStep = fBAlphaHigh;
+	DialogSampleOne.m_fYStep = fBBetaHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fBAlphaHigh = DialogSampleOne.m_fXStep;
+		fBBetaHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	int height = pDocOut->m_MatOpen.rows;
+	int width = pDocOut->m_MatOpen.cols;
+
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			if (pDocOut->m_MatOpen.channels() == 3)
+			{
+				int b = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+				int g = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+				int r = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+				//blue channel
+				if (b < fBLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(b * fBAlphaLow + fBBetaLow);
+				}
+				if (b > fBHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(b * fBAlphaHigh + fBBetaHigh);
+				}
+				if ((b >= fBLow) && (b <= fBHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(b * fBAlpha + fBBeta);
+				}
+				//green channel
+				if (g < fGLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = saturate_cast<uchar>(g * fGAlphaLow + fGBetaLow);
+				}
+				if (g > fGHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = saturate_cast<uchar>(g * fGAlphaHigh + fGBetaHigh);
+				}
+
+				if ((g >= fGLow) && (g <= fGHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = saturate_cast<uchar>(g * fGAlpha + fGBeta);
+				}
+				//red channel
+				if (r < fRLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = saturate_cast<uchar>(r * fRAlphaLow + fRBetaLow);
+				}
+				if (r > fRHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = saturate_cast<uchar>(r * fRAlphaHigh + fRBetaHigh);
+				}
+				if ((r >= fRLow) && (r <= fRHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = saturate_cast<uchar>(r * fRAlpha + fRBeta);
+				}
+			}
+			else if (pDocOut->m_MatOpen.channels() == 1)
+			{
+				float v = pDocIn->m_MatOpen.at<uchar>(row, col);
+				if (v < fRLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(v * fRAlphaLow + fRBetaLow);
+				}
+				if (v > fRHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(v * fRAlphaHigh + fRBetaHigh);
+				}
+				if ((v >= fRLow) && (v <= fRHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(v * fRAlpha + fRBeta);
+				}
+			}
+		}
+	}
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnPointLogarithmic()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	int height = pDocOut->m_MatOpen.rows;
+	int width = pDocOut->m_MatOpen.cols;
+
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			if (pDocOut->m_MatOpen.channels() == 3)
+			{
+				int b = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+				int g = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+				int r = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = log((double)b + 1);
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = log((double)g + 1);
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = log((double)r + 1);
+			}
+			else if (pDocOut->m_MatOpen.channels() == 1)
+			{
+				float v = pDocIn->m_MatOpen.at<uchar>(row, col);
+				pDocOut->m_MatOpen.at<uchar>(row, col) = log((double)v + 1);
+			}
+		}
+	}
+	normalize(pDocOut->m_MatOpen, pDocOut->m_MatOpen, 0, 255, NORM_MINMAX);
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnPointExponent()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	float fRSubtract;
+	float fGSubtract;
+	float fBSubtract;
+
+	fRSubtract = 0.001;
+	fGSubtract = 0.001;
+	fBSubtract = 0.001;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fRSubtract;
+	DialogSampleOne.m_fYStep = fGSubtract;
+	DialogSampleOne.m_fZ = fBSubtract;
+
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRSubtract = DialogSampleOne.m_fXStep;
+		fGSubtract = DialogSampleOne.m_fYStep;
+		fBSubtract = DialogSampleOne.m_fZ;
+	}
+	else
+	{
+		return;
+	}
+	float fRMultiply;
+	float fGMultiply;
+	float fBMultiply;
+
+	fRMultiply = 1.0;
+	fGMultiply = 1.0;
+	fBMultiply = 1.0;
+	DialogSampleOne.m_fXStep = fRMultiply;
+	DialogSampleOne.m_fYStep = fGMultiply;
+	DialogSampleOne.m_fZ = fBMultiply;
+
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRMultiply = DialogSampleOne.m_fXStep;
+		fGMultiply = DialogSampleOne.m_fYStep;
+		fBMultiply = DialogSampleOne.m_fZ;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	int height = pDocOut->m_MatOpen.rows;
+	int width = pDocOut->m_MatOpen.cols;
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			if (pDocOut->m_MatOpen.channels() == 3)
+			{
+				int b = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+				int g = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+				int r = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = expf((b / 255.0 - fBSubtract) * fBMultiply) - 1;
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = expf((g / 255.0 - fGSubtract) * fGMultiply) - 1;
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = expf((r / 255.0 - fRSubtract) * fRMultiply) - 1;
+			}
+			else if (pDocOut->m_MatOpen.channels() == 1)
+			{
+				float v = pDocIn->m_MatOpen.at<uchar>(row, col);
+				pDocOut->m_MatOpen.at<uchar>(row, col) = expf(((double)v / 255.0 - fRMultiply) * fRMultiply) - 1;
+			}
+		}
+	}
+	normalize(pDocOut->m_MatOpen, pDocOut->m_MatOpen, 0, 255, NORM_MINMAX);
+
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnPointPower()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+
+	float fRSubtract;
+	float fGSubtract;
+	float fBSubtract;
+
+	fRSubtract = 0.001;
+	fGSubtract = 0.001;
+	fBSubtract = 0.001;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fRSubtract;
+	DialogSampleOne.m_fYStep = fGSubtract;
+	DialogSampleOne.m_fZ = fBSubtract;
+
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRSubtract = DialogSampleOne.m_fXStep;
+		fGSubtract = DialogSampleOne.m_fYStep;
+		fBSubtract = DialogSampleOne.m_fZ;
+	}
+	else
+	{
+		return;
+	}
+	float fRMultiply;
+	float fGMultiply;
+	float fBMultiply;
+
+	fRMultiply = 255;
+	fGMultiply = 255;
+	fBMultiply = 255;
+	DialogSampleOne.m_fXStep = fRMultiply;
+	DialogSampleOne.m_fYStep = fGMultiply;
+	DialogSampleOne.m_fZ = fBMultiply;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRMultiply = DialogSampleOne.m_fXStep;
+		fGMultiply = DialogSampleOne.m_fYStep;
+		fBMultiply = DialogSampleOne.m_fZ;
+	}
+	else
+	{
+		return;
+	}
+	float fRPower;
+	float fGPower;
+	float fBPower;
+
+	fRPower = 0.5;
+	fGPower = 0.5;
+	fBPower = 0.5;
+	DialogSampleOne.m_fXStep = fRPower;
+	DialogSampleOne.m_fYStep = fGPower;
+	DialogSampleOne.m_fZ = fBPower;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRPower = DialogSampleOne.m_fXStep;
+		fGPower = DialogSampleOne.m_fYStep;
+		fBPower = DialogSampleOne.m_fZ;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	int height = pDocOut->m_MatOpen.rows;
+	int width = pDocOut->m_MatOpen.cols;
+
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			if (pDocOut->m_MatOpen.channels() == 3)
+			{
+				int b = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+				int g = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+				int r = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = fBMultiply * powf((b / 255.0 + fBSubtract), fBPower);
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = fGMultiply * powf((g / 255.0 + fGSubtract), fGPower);
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = fRMultiply * powf((r / 255.0 + fRSubtract), fRPower);
+			}
+			else if (pDocOut->m_MatOpen.channels() == 1)
+			{
+				float v = pDocIn->m_MatOpen.at<uchar>(row, col);
+				pDocOut->m_MatOpen.at<uchar>(row, col) = fRMultiply * powf((v / 255.0 + fRSubtract), fRPower);
+			}
+		}
+	}
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnPointBlackwhite()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	float fRLow;
+	float fRHigh;
+	fRLow = 50;
+	fRHigh = 200;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = fRLow;
+	DialogSampleOne.m_fYStep = fRHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRLow = DialogSampleOne.m_fXStep;
+		fRHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	//green channel
+	float fGLow;
+	float fGHigh;
+	fGLow = 50;
+	fGHigh = 200;
+	DialogSampleOne.m_fXStep = fGLow;
+	DialogSampleOne.m_fYStep = fGHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fGLow = DialogSampleOne.m_fXStep;
+		fGHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	//blue channel
+	float fBLow;
+	float fBHigh;
+	fBLow = 50;
+	fBHigh = 200;
+	DialogSampleOne.m_fXStep = fBLow;
+	DialogSampleOne.m_fYStep = fBHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fBLow = DialogSampleOne.m_fXStep;
+		fBHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	int height = pDocOut->m_MatOpen.rows;
+	int width = pDocOut->m_MatOpen.cols;
+
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			if (pDocOut->m_MatOpen.channels() == 3)
+			{
+
+				int b = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+				int g = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+				int r = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+				//blue channel
+				if (b < fBLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 0;
+				}
+				if (b > fBHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 0;
+				}
+				if ((b >= fBLow) && (b <= fBHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 255;
+				}
+				//green channel
+				if (g < fGLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = 0;
+				}
+				if (g > fGHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = 0;
+				}
+				if ((g >= fGLow) && (g <= fGHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = 255;
+				}
+				//red channel
+				if (r < fRLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = 0;
+				}
+				if (r > fRHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = 0;
+				}
+				if ((r >= fRLow) && (r <= fRHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = 255;
+				}
+				else if (pDocOut->m_MatOpen.channels() == 1)
+				{
+					float v = pDocIn->m_MatOpen.at<uchar>(row, col);
+					if (v < fRLow)
+					{
+						pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 0;
+					}
+					if (v > fRHigh)
+					{
+						pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 0;
+					}
+
+					if ((v >= fRLow) && (v <= fRHigh))
+					{
+						pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 255;
+					}
+				}
+			}
+		}
+		pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+		pViewOut->OnInitialUpdate();
+	}
+
+}
+
+
+void CDIPYSView::OnPointPreserve()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+	CDialogSample DialogSampleOne;
+	float fRLow;
+	float fRHigh;
+	fRLow = 50;
+	fRHigh = 200;
+	DialogSampleOne.m_fXStep = fRLow;
+	DialogSampleOne.m_fYStep = fRHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fRLow = DialogSampleOne.m_fXStep;
+		fRHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	//green channel
+	float fGLow;
+	float fGHigh;
+	fGLow = 50;
+	fGHigh = 200;
+	DialogSampleOne.m_fXStep = fGLow;
+	DialogSampleOne.m_fYStep = fGHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fGLow = DialogSampleOne.m_fXStep;
+		fGHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	//blue channel
+	float fBLow;
+	float fBHigh;
+	fBLow = 50;
+	fBHigh = 200;
+	DialogSampleOne.m_fXStep = fBLow;
+	DialogSampleOne.m_fYStep = fBHigh;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		fBLow = DialogSampleOne.m_fXStep;
+		fBHigh = DialogSampleOne.m_fYStep;
+	}
+	else
+	{
+		return;
+	}
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	int height = pDocOut->m_MatOpen.rows;
+	int width = pDocOut->m_MatOpen.cols;
+
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			if (pDocOut->m_MatOpen.channels() == 3)
+			{
+
+				int b = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+				int g = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+				int r = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+				//blue channel
+				if (b < fBLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = b;
+				}
+				if (b > fBHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = b;
+				}
+				if ((b >= fBLow) && (b <= fBHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 255;
+				}
+				//green channel
+				if (g < fGLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = g;
+				}
+				if (g > fGHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = g;
+				}
+				if ((g >= fGLow) && (g <= fGHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = 255;
+				}
+				//red channel
+				if (r < fRLow)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = r;
+				}
+				if (r > fRHigh)
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = r;
+				}
+				if ((r >= fRLow) && (r <= fRHigh))
+				{
+					pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = 255;
+				}
+				else if (pDocOut->m_MatOpen.channels() == 1)
+				{
+					float v = pDocIn->m_MatOpen.at<uchar>(row, col);
+					if (v < fRLow)
+					{
+						pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = v;
+					}
+					if (v > fRHigh)
+					{
+						pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = v;
+					}
+
+					if ((v >= fRLow) && (v <= fRHigh))
+					{
+						pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = 255;
+					}
+				}
+			}
+		}
+		pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+		pViewOut->OnInitialUpdate();
+	}
+}
+
+
+void CDIPYSView::OnPointBit()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+
+	int nBit;
+	nBit = 7;
+	CDialogSample DialogSampleOne;
+	DialogSampleOne.m_fXStep = nBit;
+	if (DialogSampleOne.DoModal() == IDOK)
+	{
+		nBit = DialogSampleOne.m_fXStep;
+	}
+	else
+	{
+		return;
+	}
+	byte nMask;
+	nMask = 256 / powf(2, (8 - nBit));
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut =
+		(CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+	pDocOut->m_MatOpen = Mat::zeros(pDocIn->m_MatOpen.size(),
+		pDocIn->m_MatOpen.type());
+	int height = pDocOut->m_MatOpen.rows;
+	int width = pDocOut->m_MatOpen.cols;
+
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			if (pDocOut->m_MatOpen.channels() == 3)
+			{
+				int b = pDocIn->m_MatOpen.at<Vec3b>(row, col)[0];
+				int g = pDocIn->m_MatOpen.at<Vec3b>(row, col)[1];
+				int r = pDocIn->m_MatOpen.at<Vec3b>(row, col)[2];
+				b = b & nMask;
+				g = g & nMask;
+				r = r & nMask;
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = b;
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[1] = g;
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[2] = r;
+			}
+			else if (pDocOut->m_MatOpen.channels() == 1)
+			{
+				int v = pDocIn->m_MatOpen.at<uchar>(row, col);
+				v = v & nMask;
+				pDocOut->m_MatOpen.at<Vec3b>(row, col)[0] = v;
+			}
+		}
+	}
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
+
+}
+
+
+void CDIPYSView::OnPointAutocontrastmat()
+{
+	CDIPYSDoc* pDocIn = GetDocument();
+	ASSERT_VALID(pDocIn);
+	if (!pDocIn)
+		return;
+
+	// Split the input Mat into channels
+	std::vector<Mat> channels;
+	split(pDocIn->m_MatOpen, channels);
+
+	// Apply the AutoContrast operation to each channel
+	for (int i = 0; i < channels.size(); ++i)
+	{
+		// Find the min and max values for the channel
+		double minVal, maxVal;
+		minMaxLoc(channels[i], &minVal, &maxVal);
+
+		// Scale and shift values for the channel
+		channels[i] = (channels[i] - minVal) * (255.0 / (maxVal - minVal));
+	}
+
+	// Merge the channels back into a 3-channel Mat
+	Mat resultMat;
+	merge(channels, resultMat);
+
+	// Convert the resultMat to unsigned char
+	resultMat.convertTo(resultMat, CV_8U);
+
+	CMainFrame* pFrame = (CMainFrame*)(AfxGetApp()->m_pMainWnd);
+	pFrame->SendMessage(WM_COMMAND, ID_FILE_NEW);
+	CDIPYSView* pViewOut = (CDIPYSView*)pFrame->MDIGetActive()->GetActiveView();
+	CDIPYSDoc* pDocOut = pViewOut->GetDocument();
+
+	// Copy the resultMat to the output document's Mat
+	pDocOut->m_MatOpen = resultMat.clone();
+
+	pDocIn->MatToCImage(pDocOut->m_MatOpen, pDocOut->m_ImageOpen);
+	pViewOut->OnInitialUpdate();
 }

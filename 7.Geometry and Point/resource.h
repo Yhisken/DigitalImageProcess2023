@@ -89,6 +89,7 @@
 #define IDC_EDIT_XSTEP                  1001
 #define yStep                           1002
 #define xStep                           1003
+#define IDC_EDIT_Z                      1004
 #define ID_DIGITIZE_SUBSAMPLING         32771
 #define ID_DIGITIZE_MOSAIC              32772
 #define ID_DIGITIZE_QUANTIZERULE        32773
@@ -175,14 +176,30 @@
 #define ID_GEOMETRY_RIPPLE              32854
 #define ID_GEOMETRY_SPHERICAL           32855
 #define ID_GEOMETRY_STITCH              32856
+#define ID_POINT_BRIGHTNESSMAT          32857
+#define ID_POINT_BRIGHTNESS             32858
+#define ID_POINT_CONTRASTMAT            32859
+#define ID_POINT_CONTRAST               32860
+#define ID_POINT_AUTOCONTRAST           32861
+#define ID_POINT_GLOBALMAT              32862
+#define ID_POINT_GLOBAL                 32863
+#define ID_POINT_LOCAL                  32864
+#define ID_POINT_PIECEWISE              32865
+#define ID_POINT_LOGARITHMIC            32866
+#define ID_POINT_EXPONENT               32867
+#define ID_POINT_POWER                  32868
+#define ID_POINT_BLACKWHITE             32869
+#define ID_POINT_PRESERVE               32870
+#define ID_POINT_BIT                    32871
+#define ID_POINT_AUTOCONTRASTMAT        32872
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        312
-#define _APS_NEXT_COMMAND_VALUE         32857
-#define _APS_NEXT_CONTROL_VALUE         1004
+#define _APS_NEXT_COMMAND_VALUE         32873
+#define _APS_NEXT_CONTROL_VALUE         1005
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

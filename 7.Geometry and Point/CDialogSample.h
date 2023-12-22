@@ -24,4 +24,5 @@ protected:
 public:
 	float m_fXStep;
 	float m_fYStep;
+	float m_fZ;
 };

@@ -137,6 +137,22 @@ public:
 	afx_msg void OnGeometryStitch();
 	Point2f m_pointsSrc[100];
 	Point2f m_pointsDst[100];
+	afx_msg void OnPointBrightnessmat();
+	afx_msg void OnPointBrightness();
+	afx_msg void OnPointContrastmat();
+	afx_msg void OnPointContrast();
+	afx_msg void OnPointAutocontrast();
+	afx_msg void OnPointGlobalmat();
+	afx_msg void OnPointGlobal();
+	afx_msg void OnPointLocal();
+	afx_msg void OnPointPiecewise();
+	afx_msg void OnPointLogarithmic();
+	afx_msg void OnPointExponent();
+	afx_msg void OnPointPower();
+	afx_msg void OnPointBlackwhite();
+	afx_msg void OnPointPreserve();
+	afx_msg void OnPointBit();
+	afx_msg void OnPointAutocontrastmat();
 };
 
 #ifndef _DEBUG  // DIP-YSView.cpp 中的调试版本

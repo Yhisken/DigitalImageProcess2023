@@ -15,6 +15,7 @@ CDialogSample::CDialogSample(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_SAMPLING, pParent)
 	, m_fXStep(0)
 	, m_fYStep(0)
+	, m_fZ(0)
 {
 
 }
@@ -28,6 +29,7 @@ void CDialogSample::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT_XSTEP, m_fXStep);
 	DDX_Text(pDX, IDC_EDIT_YSTEP, m_fYStep);
+	DDX_Text(pDX, IDC_EDIT_Z, m_fZ);
 }
 
 
