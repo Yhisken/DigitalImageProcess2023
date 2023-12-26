@@ -49,3 +49,9 @@ the solution and change the include directory and library directory of opencv to
 **new function :** The menu has added options for **Gray** and **Colorize**. However, considering the need and complexity, there are 5 **Gray** operations here: **Max**,**Min**,**Middle** for RGB,**weighted mean** for HSV,Only **L** for Lab, and **Colorize** only has **JET, HSV, and BONE**. Please add them yourself if needed.<br />
 ### — 6.Algebra and Logic
 **new function :** The menu has added options for **Arithmetic** and **Logical**, which include corresponding function operations, such as **addition, subtraction, and complex variants** in **Arithmetic**. **Logic** include simple **AND, NOR, and other operations**. Please download and view the details yourself.<br />
+
+### 7.Geometry and Point<br />
+
+### 8.Histogram<br />
+**Possible potential issues :** If you have error with **CV_DbgAssert(CV_ELEM_SIZE1(traits::Depth<_Tp>::value) == elemSize1());** in **mat.inl.hpp** of OpenCV,Please comment out this line of code with "//".<br />
+### 9.Smooth<br />
